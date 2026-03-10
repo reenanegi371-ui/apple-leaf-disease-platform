@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}LeafHealth AI - Home{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <h1>Detect Apple Leaf Diseases with AI</h1>
+        <p>Upload a photo of your apple leaf and get instant disease diagnosis with treatment recommendations</p>
+        <a href="/detect" class="btn btn-primary btn-large">
+            <span class="btn-icon">📸</span>
+            Start Detection
+        </a>
+    </div>
+    <div class="hero-image">
+        <img src="{{ url_for('static', filename='images/hero-leaf.png') }}" alt="Apple Leaf">
+    </div>
+</div>
+
+<div class="features-section">
+    <h2 class="section-title">How It Works</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">📷</div>
+            <h3>1. Upload Photo</h3>
+            <p>Take a photo of the affected apple leaf or upload from gallery</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>2. AI Analysis</h3>
+            <p>Our AI model analyzes the leaf and identifies the disease</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>3. Get Results</h3>
+            <p>Receive detailed results with confidence scores</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">💊</div>
+            <h3>4. Treatment</h3>
+            <p>Get organic and chemical treatment recommendations</p>
+        </div>
+    </div>
+</div>
+
+<div class="diseases-preview">
+    <h2 class="section-title">Common Apple Leaf Diseases</h2>
+    <div class="disease-grid">
+        <div class="disease-card">
+            <img src="{{ url_for('static', filename='images/diseases/apple_scab.jpg') }}" alt="Apple Scab">
+            <div class="disease-info">
+                <h3>Apple Scab</h3>
+                <p>Olive-green to brown spots on leaves</p>
+            </div>
+        </div>
+        <div class="disease-card">
+            <img src="{{ url_for('static', filename='images/diseases/black_rot.jpg') }}" alt="Black Rot">
+            <div class="disease-info">
+                <h3>Black Rot</h3>
+                <p>Purple spots with frog-eye pattern</p>
+            </div>
+        </div>
+        <div class="disease-card">
+            <img src="{{ url_for('static', filename='images/diseases/cedar_rust.jpg') }}" alt="Cedar Rust">
+            <div class="disease-info">
+                <h3>Cedar Rust</h3>
+                <p>Bright orange-yellow spots</p>
+            </div>
+        </div>
+        <div class="disease-card">
+            <img src="{{ url_for('static', filename='images/diseases/healthy.jpg') }}" alt="Healthy">
+            <div class="disease-info">
+                <h3>Healthy Leaf</h3>
+                <p>Normal green, disease-free leaf</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="stats-section">
+    <div class="stat-item">
+        <div class="stat-number">98.5%</div>
+        <div class="stat-label">Accuracy</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">4</div>
+        <div class="stat-label">Diseases Detected</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">&lt;2s</div>
+        <div class="stat-label">Detection Time</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">24/7</div>
+        <div class="stat-label">Availability</div>
+    </div>
+</div>
+
+<div class="cta-section">
+    <h2>Ready to check your apple leaves?</h2>
+    <p>Get started now with our easy-to-use detection tool</p>
+    <a href="/detect" class="btn btn-secondary btn-large">Try It Now</a>
+</div>
+{% endblock %}

@@ -1,0 +1,418 @@
+/* Responsive Styles for LeafHealth AI Website */
+
+/* Large Desktop (1200px and above) */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1140px;
+    }
+    
+    .hero-section h1 {
+        font-size: 3rem;
+    }
+}
+
+/* Desktop (992px to 1199px) */
+@media (max-width: 1199px) {
+    .container {
+        max-width: 960px;
+    }
+    
+    .hero-section h1 {
+        font-size: 2.5rem;
+    }
+    
+    .features-grid {
+        gap: 1.5rem;
+    }
+}
+
+/* Tablet (768px to 991px) */
+@media (max-width: 991px) {
+    .container {
+        max-width: 720px;
+    }
+    
+    /* Navigation */
+    .nav-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: white;
+        flex-direction: column;
+        padding: 1rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .nav-menu.active {
+        display: flex;
+    }
+    
+    .hamburger {
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+    }
+    
+    .bar {
+        width: 25px;
+        height: 3px;
+        background: #333;
+        margin: 3px 0;
+        transition: 0.3s;
+    }
+    
+    /* Hero Section */
+    .hero-section {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: 3rem 1.5rem;
+    }
+    
+    .hero-image {
+        order: -1;
+    }
+    
+    .hero-image img {
+        max-width: 300px;
+        margin: 0 auto;
+    }
+    
+    /* Features Grid */
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    /* Stats Section */
+    .stats-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    /* Results Page */
+    .result-body {
+        grid-template-columns: 1fr;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Mobile Landscape (576px to 767px) */
+@media (max-width: 767px) {
+    .container {
+        max-width: 540px;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+    
+    h2 {
+        font-size: 1.75rem;
+    }
+    
+    /* Hero Section */
+    .hero-section {
+        padding: 2rem 1rem;
+    }
+    
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-section p {
+        font-size: 1rem;
+    }
+    
+    /* Buttons */
+    .btn-large {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    /* Features Grid */
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .feature-card {
+        padding: 1.5rem;
+    }
+    
+    /* Disease Grid */
+    .disease-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    /* Stats Section */
+    .stats-section {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 2rem 1rem;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+    }
+    
+    /* Footer */
+    .footer-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    /* Upload Options */
+    .upload-options {
+        flex-direction: column;
+    }
+    
+    .option-divider:before,
+    .option-divider:after {
+        display: none;
+    }
+    
+    /* Result Footer */
+    .result-footer {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+}
+
+/* Mobile Portrait (up to 575px) */
+@media (max-width: 575px) {
+    .container {
+        padding: 0 1rem;
+    }
+    
+    h1 {
+        font-size: 1.75rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    /* Navigation */
+    .logo {
+        font-size: 1.25rem;
+    }
+    
+    /* Hero Section */
+    .hero-section {
+        padding: 1.5rem 1rem;
+    }
+    
+    .hero-section h1 {
+        font-size: 1.75rem;
+    }
+    
+    /* Disease Grid */
+    .disease-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .disease-card img {
+        height: 180px;
+    }
+    
+    /* Stats Section */
+    .stats-section {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    /* Modal */
+    .modal-content {
+        width: 95%;
+        margin: 1rem auto;
+    }
+    
+    .modal-body {
+        min-height: 300px;
+    }
+    
+    /* Tabs */
+    .tab-buttons {
+        flex-wrap: wrap;
+    }
+    
+    .tab-btn {
+        flex: 1 1 auto;
+        min-width: 120px;
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Probability Chart */
+    .probability-item {
+        flex-wrap: wrap;
+    }
+    
+    .disease-name {
+        width: 100%;
+        margin-bottom: 0.25rem;
+    }
+    
+    .progress-bar-container {
+        width: calc(100% - 70px);
+    }
+    
+    /* Form Elements */
+    .form-group input,
+    .form-group textarea {
+        padding: 0.6rem;
+    }
+    
+    /* Contact Info */
+    .info-item {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    /* Seasonal Grid */
+    .seasonal-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Small Mobile (up to 375px) */
+@media (max-width: 375px) {
+    .hero-section h1 {
+        font-size: 1.5rem;
+    }
+    
+    .btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+    
+    .feature-icon {
+        font-size: 2.5rem;
+    }
+    
+    .feature-card h3 {
+        font-size: 1.1rem;
+    }
+    
+    .stat-number {
+        font-size: 1.75rem;
+    }
+    
+    /* Camera Modal */
+    .modal-footer {
+        flex-direction: column;
+    }
+    
+    .modal-footer .btn {
+        width: 100%;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .navbar,
+    .footer,
+    .btn,
+    .cta-section {
+        display: none !important;
+    }
+    
+    body {
+        background: white;
+        color: black;
+    }
+    
+    a {
+        text-decoration: none;
+        color: black;
+    }
+    
+    .container {
+        width: 100%;
+        max-width: none;
+        padding: 0;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    body.dark-mode {
+        background: #1a1a1a;
+        color: #ffffff;
+    }
+    
+    .dark-mode .navbar {
+        background: #2d2d2d;
+    }
+    
+    .dark-mode .card {
+        background: #2d2d2d;
+        color: #ffffff;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    body {
+        background: black;
+        color: white;
+    }
+    
+    a {
+        color: yellow;
+    }
+    
+    button {
+        border: 2px solid white;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .btn:hover {
+        transform: none;
+    }
+    
+    .feature-card:hover {
+        transform: none;
+    }
+    
+    .btn-hover:before {
+        display: none;
+    }
+}
+
+/* Landscape Mode */
+@media (orientation: landscape) and (max-height: 500px) {
+    .hero-section {
+        min-height: auto;
+        padding: 2rem;
+    }
+    
+    .modal-content {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
+/* Retina Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .hero-image img {
+        image-rendering: crisp-edges;
+    }
+}

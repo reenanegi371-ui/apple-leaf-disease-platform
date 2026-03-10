@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}Detect Disease - LeafHealth AI{% endblock %}
+
+{% block content %}
+<div class="detect-container">
+    <h1 class="page-title">Detect Apple Leaf Disease</h1>
+    
+    {% if error %}
+    <div class="error-alert">
+        <span class="error-icon">⚠️</span>
+        <p>{{ error }}</p>
+    </div>
+    {% endif %}
+    
+    <div class="upload-options">
+        <div class="option-card" id="gallery-option">
+            <div class="option-icon">🖼️</div>
+            <h3>Upload from Gallery</h3>
+            <p>Select an image from your device</p>
+            <form id="upload-form" action="/detect" method="post" enctype="multipart/form-data">
+                <input type="file" name="image" id="image-input" accept="image/*" hidden>
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('image-input').click()">
+                    Choose Image
+                </button>
+            </form>
+        </div>
+        
+        <div class="option-divider">
+            <span>OR</span>
+        </div>
+        
+        <div class="option-card" id="camera-option">
+            <div class="option-icon">📷</div>
+            <h3>Take a Photo</h3>
+            <p>Use your device camera</p>
+            <button class="btn btn-secondary" onclick="openCamera()">
+                Open Camera
+            </button>
+        </div>
+    </div>
+    
+    <!-- Camera Modal -->
+    <div id="camera-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Take Photo</h3>
+                <span class="close" onclick="closeCamera()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <video id="camera-feed" autoplay playsinline></video>
+                <canvas id="camera-canvas" style="display: none;"></canvas>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeCamera()">Cancel</button>
+                <button class="btn btn-primary" onclick="capturePhoto()">Capture</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Preview Area -->
+    <div id="preview-area" style="display: none;">
+        <h2>Image Preview</h2>
+        <div class="preview-container">
+            <img id="image-preview" src="" alt="Preview">
+            <div class="preview-actions">
+                <button class="btn btn-secondary" onclick="resetUpload()">Choose Different</button>
+                <button class="btn btn-primary" onclick="submitImage()">Detect Disease</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="upload-tips">
+        <h3>Tips for best results:</h3>
+        <ul>
+            <li>Use clear, well-lit photos</li>
+            <li>Focus on the affected area</li>
+            <li>Avoid blurry or dark images</li>
+            <li>Include both healthy and diseased parts if possible</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+let cameraStream = null;
+
+function openCamera() {
+    const modal = document.getElementById('camera-modal');
+    modal.style.display = 'block';
+    
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function(stream) {
+                cameraStream = stream;
+                const video = document.getElementById('camera-feed');
+                video.srcObject = stream;
+                video.play();
+            })
+            .catch(function(error) {
+                console.error("Camera error:", error);
+                alert("Could not access camera. Please make sure you have granted permission.");
+            });
+    }
+}
+
+function closeCamera() {
+    const modal = document.getElementById('camera-modal');
+    modal.style.display = 'none';
+    
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+    }
+}
+
+function capturePhoto() {
+    const video = document.getElementById('camera-feed');
+    const canvas = document.getElementById('camera-canvas');
+    const context = canvas.getContext('2d');
+    
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    // Convert to data URL
+    const imageData = canvas.toDataURL('image/jpeg');
+    
+    // Hide camera
+    closeCamera();
+    
+    // Show preview
+    const previewArea = document.getElementById('preview-area');
+    const preview = document.getElementById('image-preview');
+    preview.src = imageData;
+    previewArea.style.display = 'block';
+    
+    // Hide upload options
+    document.querySelector('.upload-options').style.display = 'none';
+}
+
+function resetUpload() {
+    document.getElementById('preview-area').style.display = 'none';
+    document.querySelector('.upload-options').style.display = 'flex';
+    document.getElementById('image-input').value = '';
+}
+
+function submitImage() {
+    const preview = document.getElementById('image-preview');
+    
+    // Convert data URL to blob
+    fetch(preview.src)
+        .then(res => res.blob())
+        .then(blob => {
+            const formData = new FormData();
+            formData.append('image', blob, 'camera-capture.jpg');
+            
+            // Show loading
+            showLoading();
+            
+            // Submit form
+            fetch('/detect', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.open();
+                document.write(html);
+                document.close();
+            })
+            .catch(error => {
+                hideLoading();
+                alert('Error: ' + error);
+            });
+        });
+}
+
+// Handle file input change
+document.getElementById('image-input').addEventListener('change', function(e) {
+    if (this.files && this.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const previewArea = document.getElementById('preview-area');
+            const preview = document.getElementById('image-preview');
+            preview.src = e.target.result;
+            previewArea.style.display = 'block';
+            document.querySelector('.upload-options').style.display = 'none';
+        }
+        reader.readAsDataURL(this.files[0]);
+    }
+});
+
+function showLoading() {
+    // Add loading indicator
+    const loader = document.createElement('div');
+    loader.className = 'loading-overlay';
+    loader.innerHTML = '<div class="loader"></div><p>Analyzing image...</p>';
+    document.body.appendChild(loader);
+}
+
+function hideLoading() {
+    const loader = document.querySelector('.loading-overlay');
+    if (loader) loader.remove();
+}
+</script>
+{% endblock %}
