@@ -7,7 +7,7 @@ import '../models/disease_model.dart';
 import '../utils/constants.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://10.92.217.110:8000'; // Set to your computer's local IP
+  static const String baseUrl = 'http://10.183.31.110:8000'; // Updated to your PC's IP
 
   static Future<bool> checkHealth() async {
     try {

@@ -1,0 +1,44 @@
+# Virtual Environment
+apple/
+venv/
+env/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Environment variables
+.env
+.flaskenv
+
+# Logs
+logs/
+*.log
+backend/logs/
+website/logs/
+
+# Temporary files & Uploads
+backend/temp/
+website/static/uploads/*
+!website/static/uploads/.gitkeep
+temp/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Large Model Files (optional, but recommended if they are very large)
+# backend/models/best.pt
+
+# Scratch directory
+scratch/
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -478,6 +478,57 @@ body {
     bottom: -45px;
 }
 
+/* Drag and Drop Zone */
+.drop-zone {
+    position: relative;
+    width: 100%;
+    padding: 3rem 2rem;
+    border: 3px dashed #ccc;
+    border-radius: var(--border-radius);
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.drop-zone:hover,
+.drop-zone.drag-over {
+    border-color: var(--primary-color);
+    background: #e8f5e9;
+}
+
+.drop-zone.drag-over {
+    transform: scale(1.02);
+    box-shadow: 0 4px 20px rgba(46, 125, 50, 0.2);
+}
+
+.drop-zone-content {
+    pointer-events: none;
+}
+
+.drop-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.drop-zone h3 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.drop-zone p {
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.drop-zone-hint {
+    display: block;
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 0.5rem;
+}
+
 /* Modal */
 .modal {
     display: none;

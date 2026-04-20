@@ -29,7 +29,7 @@ UPLOAD_CONFIG = {
 
 # Backend API Configuration
 BACKEND_CONFIG = {
-    'url': os.getenv('BACKEND_URL', 'http://localhost:8000'),  # FastAPI backend URL
+    'url': os.getenv('BACKEND_URL', 'http://127.0.0.1:8000'),  # FastAPI backend URL
     'timeout': int(os.getenv('TIMEOUT', 30)),  # seconds
     'endpoints': {
         'health': '/health',

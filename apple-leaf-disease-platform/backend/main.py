@@ -4,26 +4,57 @@ Handles ONNX model inference and serves API endpoints
 """
 
 from fastapi import FastAPI, File, UploadFile, HTTPException
+from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import uvicorn
-import numpy as np
 from PIL import Image
 import io
-import onnxruntime as ort
+import base64
+import cv2
+import numpy as np
+from ultralytics import YOLO
+import torch
 import logging
 from datetime import datetime
 import os
 from typing import Dict, List
 import json
 import random
-from config import SERVER_CONFIG
+from config import SERVER_CONFIG, MODEL_CONFIG
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Apple Leaf Disease Detection API", version="1.0.0")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Load ONNX model on startup with mock fallback"""
+    global model_session
+    try:
+        model_path = MODEL_CONFIG['path']
+        if not os.path.exists(model_path):
+            logger.warning(f"Model file not found at {model_path}. Switching to fallback mode.")
+            model_session = None
+        elif os.path.getsize(model_path) == 0:
+            logger.warning(f"Model file at {model_path} is empty. Switching to fallback mode.")
+            model_session = None
+        else:
+            # Load YOLO model
+            model_session = YOLO(model_path)
+            # Use names from the model itself for perfect accuracy
+            global class_names
+            if hasattr(model_session, 'names') and model_session.names:
+                class_names = list(model_session.names.values())
+                logger.info(f"Loaded {len(class_names)} class names from model.")
+            
+            logger.info(f"YOLO Model loaded successfully from {model_path}")
+    except Exception as e:
+        logger.error(f"Failed to load model: {str(e)}")
+        model_session = None
+    yield  # App runs here
+
+app = FastAPI(title="Apple Leaf Disease Detection API", version="1.0.0", lifespan=lifespan)
 
 # Configure CORS
 app.add_middleware(
@@ -36,8 +67,13 @@ app.add_middleware(
 
 # Global variables
 model_session = None
-class_names = ['Apple Scab', 'Black Rot', 'Cedar Apple Rust', 'Healthy']
-input_size = 224  # Model input size
+# Standard Apple model classes (and common others in the same dataset)
+class_names = [
+    'Apple Scab', 'Apple Black Rot', 'Cedar Apple Rust', 'Apple Healthy',
+    'Blueberry Healthy', 'Cherry Powdery Mildew', 'Cherry Healthy',
+    'Corn Cercospora Leaf Spot', 'Corn Common Rust', 'Corn Northern Leaf Blight', 'Corn Healthy',
+    'Grape Black Rot', 'Grape Esca', 'Grape Leaf Blight', 'Grape Healthy'
+]
 
 # Disease information database
 DISEASE_INFO = {
@@ -179,30 +215,7 @@ DISEASE_INFO = {
     }
 }
 
-@app.on_event("startup")
-async def load_model():
-    """Load ONNX model on startup with mock fallback"""
-    global model_session
-    try:
-        model_path = "models/best.onnx"
-        if not os.path.exists(model_path):
-            logger.warning(f"Model file not found at {model_path}. Switching to fallback mode.")
-            model_session = None
-            return
-        
-        # Check if file is empty
-        if os.path.getsize(model_path) == 0:
-            logger.warning(f"Model file at {model_path} is empty. Switching to fallback mode.")
-            model_session = None
-            return
-            
-        # Create ONNX runtime session
-        model_session = ort.InferenceSession(model_path)
-        logger.info(f"Model loaded successfully from {model_path}")
-        
-    except Exception as e:
-        logger.error(f"Failed to load model: {str(e)}")
-        model_session = None
+
 
 def preprocess_image(image: Image.Image) -> np.ndarray:
     """Preprocess image for model inference"""
@@ -291,7 +304,7 @@ async def detect_disease(file: UploadFile = File(...)):
             raise HTTPException(status_code=503, detail="Model not loaded and Mock Mode is disabled")
     
     # Validate file type
-    if not file.content_type.startswith('image/'):
+    if file.content_type and not file.content_type.startswith('image/'):
         raise HTTPException(status_code=400, detail="File must be an image")
     
     try:
@@ -299,38 +312,56 @@ async def detect_disease(file: UploadFile = File(...)):
         contents = await file.read()
         image = Image.open(io.BytesIO(contents))
         
-        # Preprocess
-        input_tensor = preprocess_image(image)
+        # Run YOLO inference
+        logger.info("Running YOLO inference...")
+        results = model_session.predict(image, conf=0.25)[0]
+        logger.info(f"YOLO inference complete. Result type: {type(results)}")
         
-        # Run inference
-        input_name = model_session.get_inputs()[0].name
-        outputs = model_session.run(None, {input_name: input_tensor})
+        # Get results (detect if it's classification or detection)
+        if hasattr(results, 'probs') and results.probs is not None:
+            logger.info("Handling as Classification model")
+            probs = results.probs.data.tolist()
+            predicted_idx = int(results.probs.top1)
+            predicted_class = class_names[predicted_idx] if predicted_idx < len(class_names) else f"Class {predicted_idx}"
+            confidence = float(results.probs.top1conf * 100)
+            
+            all_probs = {}
+            for i, class_name in enumerate(class_names):
+                if i < len(probs):
+                    all_probs[class_name] = round(float(probs[i] * 100), 2)
+        else:
+            logger.info(f"Handling as Detection model. Boxes found: {len(results.boxes)}")
+            if len(results.boxes) > 0:
+                box = results.boxes[0]
+                predicted_idx = int(box.cls[0])
+                predicted_class = class_names[predicted_idx] if predicted_idx < len(class_names) else f"Class {predicted_idx}"
+                confidence = float(box.conf[0] * 100)
+                
+                all_probs = {name: 0.0 for name in class_names}
+                if predicted_class in all_probs:
+                    all_probs[predicted_class] = round(confidence, 2)
+            else:
+                predicted_class = "Healthy"
+                confidence = 100.0
+                all_probs = {"Healthy": 100.0, "Apple Scab": 0.0, "Black Rot": 0.0, "Cedar Apple Rust": 0.0}
+
+        # Draw boxes on the image
+        annotated_frame = results.plot()  # BGR array
+        annotated_image_rgb = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
+        pil_img = Image.fromarray(annotated_image_rgb)
         
-        # Get probabilities
-        probabilities = outputs[0][0]
-        
-        # Apply softmax if needed (adjust based on your model output)
-        probabilities = np.exp(probabilities) / np.sum(np.exp(probabilities))
-        
-        # Get predicted class
-        predicted_idx = np.argmax(probabilities)
-        predicted_class = class_names[predicted_idx]
-        confidence = float(probabilities[predicted_idx] * 100)
-        
-        # Get all probabilities
-        all_probs = {}
-        for i, class_name in enumerate(class_names):
-            all_probs[class_name] = float(probabilities[i] * 100)
-        
-        # Sort by confidence
-        all_probs = dict(sorted(all_probs.items(), key=lambda x: x[1], reverse=True))
-        
+        # Convert to base64 to send to frontend
+        buffered = io.BytesIO()
+        pil_img.save(buffered, format="JPEG")
+        img_str = base64.b64encode(buffered.getvalue()).decode()
+
         # Prepare response
         result = {
             "success": True,
             "disease": predicted_class,
             "confidence": round(confidence, 2),
             "all_probabilities": all_probs,
+            "annotated_image": img_str, # Send image with boxes back!
             "timestamp": datetime.now().isoformat()
         }
         
@@ -375,4 +406,5 @@ async def get_all_diseases():
     }
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    # Use "main:app" string instead of app object to enable reload=True
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

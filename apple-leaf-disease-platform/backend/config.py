@@ -14,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent
 
 # Model Configuration
 MODEL_CONFIG = {
-    'path': os.path.join(BASE_DIR, 'models', 'best.onnx'),
+    'path': os.path.join(BASE_DIR, 'models', 'best.pt'),
     'input_size': 224,
     'class_names': ['Apple Scab', 'Black Rot', 'Cedar Apple Rust', 'Healthy'],
     'confidence_threshold': 0.5
@@ -22,7 +22,7 @@ MODEL_CONFIG = {
 
 # Server Configuration
 SERVER_CONFIG = {
-    'host': os.getenv('HOST', '0.0.0.0'),
+    'host': os.getenv('HOST', '127.0.0.1'),
     'port': int(os.getenv('PORT', 8000)),
     'debug': os.getenv('DEBUG', 'True').lower() == 'true',
     'reload': os.getenv('RELOAD', 'True').lower() == 'true',

@@ -100,7 +100,7 @@ def detect():
             
             # Prepare data for template
             detection_data = {
-                'image_path': f"/{filepath}",
+                'image_path': f"static/uploads/{new_filename}",
                 'result': result,
                 'disease_info': disease_info,
                 'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
