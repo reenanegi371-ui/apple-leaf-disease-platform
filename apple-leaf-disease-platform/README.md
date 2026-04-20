@@ -92,5 +92,3 @@ project_apple/
 - Developed as a college project for apple disease detection
 - Uses open-source libraries: FastAPI, Flask, YOLO, Torch, etc.
 
----
-For any issues or contributions, please open an issue or pull request.
