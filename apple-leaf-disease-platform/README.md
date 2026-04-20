@@ -1,4 +1,4 @@
-# Apple Leaf Disease Detection Platform
+`# Apple Leaf Disease Detection Platform
 
 ## Overview
 This project is an end-to-end platform for detecting diseases in apple leaves using deep learning. It features:
