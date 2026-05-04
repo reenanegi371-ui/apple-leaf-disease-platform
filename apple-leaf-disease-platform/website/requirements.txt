@@ -27,3 +27,4 @@ Flask-WTF==1.2.1
 Flask-SQLAlchemy==3.1.1
 
 # Development
+gunicorn>=21.2.0
