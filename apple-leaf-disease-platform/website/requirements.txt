@@ -18,6 +18,9 @@ Flask-CORS==4.0.1
 
 # Forms
 WTForms==3.1.0
+
+# Database
+Flask-SQLAlchemy>=3.1.0
 Flask-WTF==1.2.1
 
 # Database (optional)

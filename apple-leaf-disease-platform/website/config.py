@@ -24,7 +24,7 @@ FLASK_CONFIG = {
 UPLOAD_CONFIG = {
     'folder': os.path.join(BASE_DIR, 'static', 'uploads'),
     'max_size': 16 * 1024 * 1024,  # 16MB
-    'allowed_extensions': {'png', 'jpg', 'jpeg', 'gif', 'bmp'}
+    'allowed_extensions': {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'tiff', 'tif'}
 }
 
 # Backend API Configuration
@@ -37,6 +37,12 @@ BACKEND_CONFIG = {
         'disease_info': '/disease-info',
         'all_diseases': '/all-diseases'
     }
+}
+
+# Database Configuration
+DATABASE_CONFIG = {
+    'uri': os.getenv('DATABASE_URL', f'sqlite:///{BASE_DIR}/detections.db'),
+    'track_modifications': False
 }
 
 # Disease Information
